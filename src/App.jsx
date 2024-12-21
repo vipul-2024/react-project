@@ -1,31 +1,36 @@
-import React from 'react';
+import React, { useState , useEffect } from 'react';
+import ImageCard from './components/Images';
+
 
 
 function App() {
+    const [images, setImages] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [term, setTerm] = useState('');
+
+    useEffect(() => {
+
+        if (term === '') return; // Don't make a request if term is empty
+
+        // setIsLoading(true); // Start loading before fetching data
+
+        fetch(`https://pixabay.com/api/?key=${process.env.REACT_APP_PIXABAY_API_KEY}&q=${term}&image_type=photo&pretty=true`)
+            .then(res => res.json())
+            .then(data => {
+                setImages(data.hits);
+            })
+            .catch(error => console.log(error));
+    },[]);
+    
     return (
-        <div className="max-w-sm rounded overflow-hidden shadow-lg">
-             <img src="https://tse2.mm.bing.net/th?id=OIP.FKsK9QqfnzvTNNvC3I5BOQHaEo&pid=Api&P=0&h=400" alt="Sunset in the mountains" className="w-full" />
-             <div className="px-6 py-4">
-                 <div className="font-bold text-xl mb-2">The Coldest Sunset</div>
-                 <p className="text-gray-700 text-base">
-                     Coldest Sunset in the world. Which is it?
-                 </p>
-                 <li>
-                    <strong>views:</strong> 1234
-                 </li>
-                 <li>
-                    <strong>likes:</strong> 142
-                 </li>
-                 <li>
-                    <strong>downloads:</strong> 123
-                 </li>
-             </div>
-             <div className="px-6 py-4">
-                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#photography</span>
-                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#travel</span>
-                 <span className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">#winter</span>
-             </div>
+       <div className=" container mx-auto">
+        <div className="grid grid-cols-3 gap-4">
+        {images.map(image =>(
+            <ImageCard key={image.id} image={image} />
+        ))}
         </div>
+       </div>
+
     );
 }
 
